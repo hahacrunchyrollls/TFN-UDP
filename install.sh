@@ -429,18 +429,18 @@ check_environment() {
 
 show_usage_and_exit() {
     echo
-    echo -e "\t$(tbold)$SCRIPT_NAME$(treset) - AGN-UDP server install script"
+    echo -e "\t$(tbold)$SCRIPT_NAME$(treset) - JERICO-UDP server install script"
     echo
     echo -e "Usage:"
     echo
-    echo -e "$(tbold)Install AGN-UDP$(treset)"
+    echo -e "$(tbold)Install JERICO-UDP$(treset)"
     echo -e "\t$0 [ -f | -l <file> | --version <version> ]"
     echo -e "Flags:"
     echo -e "\t-f, --force\tForce re-install latest or specified version even if it has been installed."
     echo -e "\t-l, --local <file>\tInstall specified AGN-UDP binary instead of download it."
     echo -e "\t--version <version>\tInstall specified version instead of the latest."
     echo
-    echo -e "$(tbold)Remove AGN-UDP$(treset)"
+    echo -e "$(tbold)Remove JERICO-UDP$(treset)"
     echo -e "\t$0 --remove"
     echo
     echo -e "$(tbold)Check for the update$(treset)"
@@ -458,7 +458,7 @@ tpl_hysteria_server_service_base() {
 
     cat << EOF
 [Unit]
-Description=AGN-UDP Service
+Description=JERICO-UDP Service
 After=network.target
 
 [Service]
@@ -720,18 +720,10 @@ perform_install() {
 
     if [[ -n "$_is_fresh_install" ]]; then
         echo
-        echo -e "$(tbold)Congratulations! AGN-UDP has been successfully installed on your server.$(treset)"
-        echo "Use 'agnudp' command to access the manager."
+        echo -e "$(tbold)Congratulations! JERICO-UDP has been successfully installed on your server.$(treset)"
+        echo "Use 'udp' command to access the manager."
 
         echo
-        echo -e "$(tbold)Client app AGN INJECTOR:$(treset)"
-        echo -e "$(tblue)https://play.google.com/store/apps/details?id=com.agn.injector$(treset)"
-        echo
-        echo -e "Follow me!"
-        echo
-        echo -e "\t+ Check out my website at $(tblue)https://www.khaledagn.me$(treset)"
-        echo -e "\t+ Follow me on Telegram: $(tblue)https://t.me/khaledagn$(treset)"
-        echo -e "\t+ Follow me on Facebook: $(tblue)https://facebook.com/itskhaledagn$(treset)"
         echo
     else
         restart_running_services
