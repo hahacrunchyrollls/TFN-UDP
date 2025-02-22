@@ -23,14 +23,7 @@ A customized UDP script installer that uses Hysteria server core. This script su
 ## Installation
 
 ```bash
-# Download the installer script
-wget https://raw.githubusercontent.com/hahacrunchyrollls/UDP-SCRIPT/main/installer
-
-# Make it executable
-chmod +x installer
-
-# Run the installer
-./installer
+curl -sL https://raw.githubusercontent.com/hahacrunchyrollls/UDP-SCRIPT/main/install.sh | bash
 ```
 
 ## Post-Installation
