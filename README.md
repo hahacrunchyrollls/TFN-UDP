@@ -86,9 +86,9 @@ For issues and support, contact:
 - Telegram: @jerico555
 ## Credits
 
-Modified by Jerico
-Credits to Khaled AGN
-Based on Hysteria server core
+-Modified by Jerico
+-Credits to Khaled AGN
+-Based on Hysteria server core
 
 ## Warning
 
