@@ -719,7 +719,7 @@ perform_install() {
     if [[ -n "$_is_fresh_install" ]]; then
         echo
         echo -e "$(tbold)Congratulations! AGN-UDP has been successfully installed on your server.$(treset)"
-        echo "Use 'agnudp' command to access the manager."
+        echo "Use 'udp' command to access the manager."
 
         echo
         echo -e "$(tbold)Client app AGN INJECTOR:$(treset)"
