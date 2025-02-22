@@ -144,9 +144,9 @@ uninstall_server() {
 show_banner() {
     clear
     echo -e "\e[1;36m╔═══════════════════════════════════════╗"
-    echo -e "║           TFN-UDP Manage          ║"
-    echo -e "║                                      ║"
-    echo -e "║       Telegram: @jerico555           ║"
+    echo -e "║           TFN-UDP Manage             ║"
+    echo -e "║                                       ║"
+    echo -e "║       Telegram: @jerico555            ║"
     echo -e "╚═══════════════════════════════════════╝\e[0m"
     echo -e "\e[1;33mServer Time : $(TZ='Asia/Manila' date '+%I:%M %p')"
     echo -e "Time Zone   : Manila/Philippines"
@@ -155,7 +155,7 @@ show_banner() {
 
 show_menu() {
     echo -e "\e[1;36m╔═══════════════════════════════════════╗"
-    echo -e "║           UDP Manager                ║"
+    echo -e "║           UDP Manager                 ║"
     echo -e "╚═══════════════════════════════════════╝\e[0m"
     echo -e "\e[1;32m[\e[0m1\e[1;32m]\e[0m Add new user"
     echo -e "\e[1;32m[\e[0m2\e[1;32m]\e[0m Edit user password"
