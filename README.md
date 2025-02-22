@@ -5,7 +5,7 @@ A customized UDP script installer that uses Hysteria server core. This script su
 ## Installation
 
 ```bash
-# curl -sL https://raw.githubusercontent.com/hahacrunchyrollls/UDP-SCRIPT/main/install.sh | bash
+curl -sL https://raw.githubusercontent.com/hahacrunchyrollls/UDP-SCRIPT/main/install.sh | bash
 ```
 
 ## Post-Installation
@@ -13,7 +13,7 @@ A customized UDP script installer that uses Hysteria server core. This script su
 After installation, you can manage the UDP service using the command:
 
 ```bash
-# udp
+udp
 ```
 
 ## Features
