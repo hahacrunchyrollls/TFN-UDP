@@ -83,15 +83,11 @@ After installation, use these commands in the UDP manager:
 ## Support
 
 For issues and support, contact:
-- Telegram: @khaledagn
-
-## License
-
-This project is licensed under MIT License
-
+- Telegram: @jerico555
 ## Credits
 
-Modified by Khaled AGN
+Modified by Jerico
+Credits to Khaled AGN
 Based on Hysteria server core
 
 ## Warning
