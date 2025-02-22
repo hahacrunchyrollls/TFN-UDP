@@ -2,7 +2,7 @@
 #
 # Try `instal_udp.sh --help` for usage.
 #
-# (c) 2024 jerico
+# (c) 2024 TFN
 #
 
 set -e
@@ -429,18 +429,18 @@ check_environment() {
 
 show_usage_and_exit() {
     echo
-    echo -e "\t$(tbold)$SCRIPT_NAME$(treset) - JERICO-UDP server install script"
+    echo -e "\t$(tbold)$SCRIPT_NAME$(treset) - TFN-UDP server install script"
     echo
     echo -e "Usage:"
     echo
-    echo -e "$(tbold)Install JERICO-UDP$(treset)"
+    echo -e "$(tbold)Install TFN-UDP$(treset)"
     echo -e "\t$0 [ -f | -l <file> | --version <version> ]"
     echo -e "Flags:"
     echo -e "\t-f, --force\tForce re-install latest or specified version even if it has been installed."
-    echo -e "\t-l, --local <file>\tInstall specified JERICO-UDP binary instead of download it."
+    echo -e "\t-l, --local <file>\tInstall specified TFN-UDP binary instead of download it."
     echo -e "\t--version <version>\tInstall specified version instead of the latest."
     echo
-    echo -e "$(tbold)Remove JERICO-UDP$(treset)"
+    echo -e "$(tbold)Remove TFN-UDP$(treset)"
     echo -e "\t$0 --remove"
     echo
     echo -e "$(tbold)Check for the update$(treset)"
@@ -458,7 +458,7 @@ tpl_hysteria_server_service_base() {
 
     cat << EOF
 [Unit]
-Description=JERICO-UDP Service
+Description=TFN-UDP Service
 After=network.target
 
 [Service]
@@ -720,7 +720,7 @@ perform_install() {
 
     if [[ -n "$_is_fresh_install" ]]; then
         echo
-        echo -e "$(tbold)Congratulations! JERICO-UDP has been successfully installed on your server.$(treset)"
+        echo -e "$(tbold)Congratulations! TFN-UDP has been successfully installed on your server.$(treset)"
         echo "Use 'udp' command to access the manager."
 
         echo
@@ -729,7 +729,7 @@ perform_install() {
         restart_running_services
         start_services
         echo
-        echo -e "$(tbold)JERICO-UDP has been successfully updated to $VERSION.$(treset)"
+        echo -e "$(tbold)TFN-UDP has been successfully updated to $VERSION.$(treset)"
         echo
     fi
 }
@@ -740,7 +740,7 @@ perform_remove() {
     perform_remove_hysteria_systemd
 
     echo
-    echo -e "$(tbold)Congratulations! JERICO-UDP has been successfully removed from your server.$(treset)"
+    echo -e "$(tbold)Congratulations! TFN-UDP has been successfully removed from your server.$(treset)"
     echo
     echo -e "You still need to remove configuration files and ACME certificates manually with the following commands:"
     echo
@@ -772,7 +772,7 @@ setup_ssl() {
 }
 
 start_services() {
-    echo "Starting JERICO-UDP"
+    echo "Starting TFN-UDP"
     apt update
     sudo debconf-set-selections <<< "iptables-persistent iptables-persistent/autosave_v4 boolean true"
     sudo debconf-set-selections <<< "iptables-persistent iptables-persistent/autosave_v6 boolean true"
