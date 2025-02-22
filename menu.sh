@@ -130,21 +130,21 @@ restart_server() {
 }
 
 uninstall_server() {
-    echo -e "\n\e[1;34mUninstalling JERICO-UDP server...\e[0m"
+    echo -e "\n\e[1;34mUninstalling TFN-UDP server...\e[0m"
     systemctl stop hysteria-server
     systemctl disable hysteria-server
     rm -f "$SYSTEMD_SERVICE"
     systemctl daemon-reload
     rm -rf "$CONFIG_DIR"
     rm -f /usr/local/bin/hysteria
-    echo -e "\e[1;32mJERICO-UDP server uninstalled successfully.\e[0m"
+    echo -e "\e[1;32mTFN-UDP server uninstalled successfully.\e[0m"
     clear_after_command
 }
 
 show_banner() {
     clear
     echo -e "\e[1;36m╔═══════════════════════════════════════╗"
-    echo -e "║           JERICO-UDP Manage          ║"
+    echo -e "║           TFN-UDP Manage          ║"
     echo -e "║                                      ║"
     echo -e "║       Telegram: @jerico555           ║"
     echo -e "╚═══════════════════════════════════════╝\e[0m"
