@@ -5,7 +5,15 @@ A customized UDP script installer that uses Hysteria server core. This script su
 ## Installation
 
 ```bash
-curl -sL https://raw.githubusercontent.com/hahacrunchyrollls/UDP-SCRIPT/main/install.sh | bash
+# curl -sL https://raw.githubusercontent.com/hahacrunchyrollls/UDP-SCRIPT/main/install.sh | bash
+```
+
+## Post-Installation
+
+After installation, you can manage the UDP service using the command:
+
+```bash
+# udp
 ```
 
 ## Features
@@ -25,14 +33,6 @@ curl -sL https://raw.githubusercontent.com/hahacrunchyrollls/UDP-SCRIPT/main/ins
 - Root access
 - Domain pointed to your server's IP
 - Open UDP ports
-
-## Post-Installation
-
-After installation, you can manage the UDP service using the command:
-
-```bash
-udp
-```
 
 ## Management Features
 
