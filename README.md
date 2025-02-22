@@ -3,5 +3,5 @@
 
 Copy and paste it to your server
 ```
-rm -rf installer && wget https://raw.githubusercontent.com/hahacrunchyrollls/UDP-SCRIPT/refs/heads/main/installer; chmod +x installer && ./installer
+rm -rf installe.sh && https://github.com/hahacrunchyrollls/UDP-SCRIPT/blob/main/installer.sh; chmod +x installer.sh && ./installer.sh
 ```
