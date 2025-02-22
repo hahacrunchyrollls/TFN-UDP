@@ -11,6 +11,14 @@ touch "$USER_DB"
 # Set timezone to Manila/Philippines
 export TZ="Asia/Manila"
 
+# Function to clear screen after command execution
+clear_after_command() {
+    echo -e "\nPress Enter to continue..."
+    read
+    clear
+    show_banner
+}
+
 fetch_users() {
     if [[ -f "$USER_DB" ]]; then
         sqlite3 "$USER_DB" "SELECT username || ':' || password FROM users;" | paste -sd, -
@@ -36,6 +44,7 @@ add_user() {
     else
         echo -e "\e[1;31mError: Failed to add user $username.\e[0m"
     fi
+    clear_after_command
 }
 
 edit_user() {
@@ -51,6 +60,7 @@ edit_user() {
     else
         echo -e "\e[1;31mError: Failed to update user $username.\e[0m"
     fi
+    clear_after_command
 }
 
 delete_user() {
@@ -64,11 +74,13 @@ delete_user() {
     else
         echo -e "\e[1;31mError: Failed to delete user $username.\e[0m"
     fi
+    clear_after_command
 }
 
 show_users() {
     echo -e "\n\e[1;34mCurrent users:\e[0m"
     sqlite3 "$USER_DB" "SELECT username FROM users;"
+    clear_after_command
 }
 
 change_domain() {
@@ -77,6 +89,7 @@ change_domain() {
     jq ".server = \"$domain\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
     echo -e "\e[1;32mDomain changed to $domain successfully.\e[0m"
     restart_server
+    clear_after_command
 }
 
 change_obfs() {
@@ -85,6 +98,7 @@ change_obfs() {
     jq ".obfs.password = \"$obfs\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
     echo -e "\e[1;32mObfuscation string changed to $obfs successfully.\e[0m"
     restart_server
+    clear_after_command
 }
 
 change_up_speed() {
@@ -94,6 +108,7 @@ change_up_speed() {
     jq ".up = \"$up_speed Mbps\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
     echo -e "\e[1;32mUpload speed changed to $up_speed Mbps successfully.\e[0m"
     restart_server
+    clear_after_command
 }
 
 change_down_speed() {
@@ -103,11 +118,15 @@ change_down_speed() {
     jq ".down = \"$down_speed Mbps\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
     echo -e "\e[1;32mDownload speed changed to $down_speed Mbps successfully.\e[0m"
     restart_server
+    clear_after_command
 }
 
 restart_server() {
     systemctl restart hysteria-server
     echo -e "\e[1;32mServer restarted successfully.\e[0m"
+    if [[ "${FUNCNAME[1]}" == "main" ]]; then
+        clear_after_command
+    fi
 }
 
 uninstall_server() {
@@ -119,14 +138,15 @@ uninstall_server() {
     rm -rf "$CONFIG_DIR"
     rm -f /usr/local/bin/hysteria
     echo -e "\e[1;32mAGN-UDP server uninstalled successfully.\e[0m"
+    clear_after_command
 }
 
 show_banner() {
     clear
     echo -e "\e[1;36m╔═══════════════════════════════════════╗"
     echo -e "║           AGNUDP Manager                ║"
-    echo -e "║        (c) 2023 Khaled AGN             ║"
-    echo -e "║       Telegram: @khaledagn             ║"
+    echo -e "║                                       ║"
+    echo -e "║       Telegram: @jerico555            ║"
     echo -e "╚═══════════════════════════════════════╝\e[0m"
     echo -e "\e[1;33mServer Time : $(TZ='Asia/Manila' date '+%I:%M %p')"
     echo -e "Time Zone   : Manila/Philippines"
@@ -135,7 +155,7 @@ show_banner() {
 
 show_menu() {
     echo -e "\e[1;36m╔═══════════════════════════════════════╗"
-    echo -e "║           AGNUDP Manager                ║"
+    echo -e "║           UDP Manager                ║"
     echo -e "╚═══════════════════════════════════════╝\e[0m"
     echo -e "\e[1;32m[\e[0m1\e[1;32m]\e[0m Add new user"
     echo -e "\e[1;32m[\e[0m2\e[1;32m]\e[0m Edit user password"
@@ -167,7 +187,7 @@ while true; do
         8) change_down_speed ;;
         9) restart_server ;;
         10) uninstall_server; exit 0 ;;
-        11) exit 0 ;;
-        *) echo -e "\e[1;31mInvalid choice. Please try again.\e[0m" ;;
+        11) clear; exit 0 ;;
+        *) echo -e "\e[1;31mInvalid choice. Please try again.\e[0m"; clear_after_command ;;
     esac
 done
