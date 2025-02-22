@@ -84,21 +84,10 @@ show_users() {
     clear_after_command
 }
 
-change_domain() {
-    echo -e "\n\e[1;34mEnter new domain:\e[0m"
-    read -r domain
-    jq ".server = \"$domain\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
-    echo -e "\e[1;32mDomain changed to $domain successfully.\e[0m"
-    restart_server
-    clear_after_command
-}
-
-change_obfs() {
-    echo -e "\n\e[1;34mEnter new obfuscation string:\e[0m"
-    read -r obfs
-    jq ".obfs.password = \"$obfs\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
-    echo -e "\e[1;32mObfuscation string changed to $obfs successfully.\e[0m"
-    restart_server
+show_obfs() {
+    echo -e "\n\e[1;34mCurrent obfuscation string:\e[0m"
+    current_obfs=$(jq -r '.obfs.password' "$CONFIG_FILE")
+    echo -e "\e[1;32m$current_obfs\e[0m"
     clear_after_command
 }
 
@@ -177,13 +166,12 @@ show_menu() {
     echo -e "\e[1;32m[\e[0m2\e[1;32m]\e[0m Edit user password"
     echo -e "\e[1;32m[\e[0m3\e[1;32m]\e[0m Delete user"
     echo -e "\e[1;32m[\e[0m4\e[1;32m]\e[0m Show users"
-    echo -e "\e[1;32m[\e[0m5\e[1;32m]\e[0m Change domain"
-    echo -e "\e[1;32m[\e[0m6\e[1;32m]\e[0m Change obfuscation string"
-    echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Change upload speed"
-    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Change download speed"
-    echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Restart server"
-    echo -e "\e[1;32m[\e[0m10\e[1;32m]\e[0m Uninstall server"
-    echo -e "\e[1;32m[\e[0m11\e[1;32m]\e[0m Exit"
+    echo -e "\e[1;32m[\e[0m5\e[1;32m]\e[0m Show obfuscation string"
+    echo -e "\e[1;32m[\e[0m6\e[1;32m]\e[0m Change upload speed"
+    echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Change download speed"
+    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Restart server"
+    echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Uninstall server"
+    echo -e "\e[1;32m[\e[0m10\e[1;32m]\e[0m Exit"
     echo -e "\e[1;36m═══════════════════════════════════════\e[0m"
     echo -e "\e[1;32mEnter your choice:\e[0m"
 }
@@ -197,13 +185,12 @@ while true; do
         2) edit_user ;;
         3) delete_user ;;
         4) show_users ;;
-        5) change_domain ;;
-        6) change_obfs ;;
-        7) change_up_speed ;;
-        8) change_down_speed ;;
-        9) restart_server ;;
-        10) uninstall_server ;;
-        11) clear; exit 0 ;;
+        5) show_obfs ;;
+        6) change_up_speed ;;
+        7) change_down_speed ;;
+        8) restart_server ;;
+        9) uninstall_server ;;
+        10) clear; exit 0 ;;
         *) echo -e "\e[1;31mInvalid choice. Please try again.\e[0m"; clear_after_command ;;
     esac
 done
