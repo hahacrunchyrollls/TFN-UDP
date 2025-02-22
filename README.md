@@ -31,7 +31,6 @@ udp
 
 - Linux-based operating system (Ubuntu recommended)
 - Root access
-- Domain pointed to your server's IP
 - Open UDP ports
 
 ## Management Features
