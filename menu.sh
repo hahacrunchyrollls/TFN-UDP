@@ -4,6 +4,7 @@ CONFIG_DIR="/etc/hysteria"
 CONFIG_FILE="$CONFIG_DIR/config.json"
 USER_DB="$CONFIG_DIR/udpusers.db"
 SYSTEMD_SERVICE="/etc/systemd/system/hysteria-server.service"
+SCRIPT_PATH="$0"
 
 mkdir -p "$CONFIG_DIR"
 touch "$USER_DB"
@@ -138,7 +139,22 @@ uninstall_server() {
     rm -rf "$CONFIG_DIR"
     rm -f /usr/local/bin/hysteria
     echo -e "\e[1;32mTFN-UDP server uninstalled successfully.\e[0m"
-    clear_after_command
+    
+    # Create a temporary script to delete the menu script itself
+    cat > /tmp/remove_script.sh << EOF
+#!/bin/bash
+sleep 1
+rm -f "$SCRIPT_PATH"
+rm -f /tmp/remove_script.sh
+EOF
+    
+    chmod +x /tmp/remove_script.sh
+    echo -e "\e[1;32mRemoving menu script...\e[0m"
+    # Execute the temporary script in the background
+    nohup /tmp/remove_script.sh >/dev/null 2>&1 &
+    
+    # Exit immediately
+    exit 0
 }
 
 show_banner() {
@@ -186,7 +202,7 @@ while true; do
         7) change_up_speed ;;
         8) change_down_speed ;;
         9) restart_server ;;
-        10) uninstall_server; exit 0 ;;
+        10) uninstall_server ;;
         11) clear; exit 0 ;;
         *) echo -e "\e[1;31mInvalid choice. Please try again.\e[0m"; clear_after_command ;;
     esac
