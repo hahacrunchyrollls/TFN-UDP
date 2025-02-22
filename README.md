@@ -1,4 +1,4 @@
-# Jerico-UDP Custom Script
+# TFN-UDP Custom Script
 
 A customized UDP script installer that uses Hysteria server core. This script supports user management and automatic configuration of UDP services.
 
