@@ -639,18 +639,18 @@ perform_install_hysteria_home_legacy() {
 }
 
 perform_install_manager_script() {
-    local _manager_script="/usr/local/bin/agnudp_manager.sh"
-    local _symlink_path="/usr/local/bin/agnudp"
+    local _manager_script="/usr/local/bin/installer"
+    local _symlink_path="/usr/local/bin/udp"
     
     echo "Downloading manager script..."
-    curl -o "$_manager_script" "https://github.com/khaledagn/AGN-UDP/raw/main/agnudp_manager.sh"
+    curl -o "$_manager_script" "https://raw.githubusercontent.com/hahacrunchyrollls/UDP-SCRIPT/refs/heads/main/installer"
     chmod +x "$_manager_script"
     
-    echo "Creating symbolic link to run the manager script using 'agnudp' command..."
+    echo "Creating symbolic link to run the manager script using 'udp' command..."
     ln -sf "$_manager_script" "$_symlink_path"
     
     echo "Manager script installed at $_manager_script"
-    echo "You can now run the manager using the 'agnudp' command."
+    echo "You can now run the manager using the 'udp' command."
 }
 
 
