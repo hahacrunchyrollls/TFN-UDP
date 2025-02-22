@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 #
-# Try `install_agnudp.sh --help` for usage.
+# Try `instal_udp.sh --help` for usage.
 #
-# (c) 2023 Khaled AGN
+# (c) 2024 jerico
 #
 
 set -e
 
 # Domain Name
-DOMAIN="vpn.khaledagn.me"
+DOMAIN="phcjer.jericoo.site"
 
 # PROTOCOL
 PROTOCOL="udp"
