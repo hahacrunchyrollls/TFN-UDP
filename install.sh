@@ -437,7 +437,7 @@ show_usage_and_exit() {
     echo -e "\t$0 [ -f | -l <file> | --version <version> ]"
     echo -e "Flags:"
     echo -e "\t-f, --force\tForce re-install latest or specified version even if it has been installed."
-    echo -e "\t-l, --local <file>\tInstall specified AGN-UDP binary instead of download it."
+    echo -e "\t-l, --local <file>\tInstall specified JERICO-UDP binary instead of download it."
     echo -e "\t--version <version>\tInstall specified version instead of the latest."
     echo
     echo -e "$(tbold)Remove JERICO-UDP$(treset)"
@@ -729,7 +729,7 @@ perform_install() {
         restart_running_services
         start_services
         echo
-        echo -e "$(tbold)AGN-UDP has been successfully updated to $VERSION.$(treset)"
+        echo -e "$(tbold)JERICO-UDP has been successfully updated to $VERSION.$(treset)"
         echo
     fi
 }
@@ -740,7 +740,7 @@ perform_remove() {
     perform_remove_hysteria_systemd
 
     echo
-    echo -e "$(tbold)Congratulations! AGN-UDP has been successfully removed from your server.$(treset)"
+    echo -e "$(tbold)Congratulations! JERICO-UDP has been successfully removed from your server.$(treset)"
     echo
     echo -e "You still need to remove configuration files and ACME certificates manually with the following commands:"
     echo
@@ -772,7 +772,7 @@ setup_ssl() {
 }
 
 start_services() {
-    echo "Starting AGN-UDP"
+    echo "Starting JERICO-UDP"
     apt update
     sudo debconf-set-selections <<< "iptables-persistent iptables-persistent/autosave_v4 boolean true"
     sudo debconf-set-selections <<< "iptables-persistent iptables-persistent/autosave_v6 boolean true"
