@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
+# Try `install_agnudp.sh --help` for usage.
 #
-#
-#
+# (c) 2023 Khaled AGN
 #
 
 set -e
@@ -641,18 +641,18 @@ perform_install_hysteria_home_legacy() {
 }
 
 perform_install_manager_script() {
-    local _manager_script="/usr/local/bin/menu.sh.sh"
+    local _manager_script="/usr/local/bin/menu.sh"
     local _symlink_path="/usr/local/bin/udp"
     
     echo "Downloading manager script..."
-    curl -o "$_manager_script" "https://raw.githubusercontent.com/hahacrunchyrollls/UDP-SCRIPT/refs/heads/main/menu.sh"
+    curl -o "$_manager_script" "https://github.com/hahacrunchyrollls/UDP-SCRIPT/raw/refs/heads/main/menu.sh"
     chmod +x "$_manager_script"
     
     echo "Creating symbolic link to run the manager script using 'udp' command..."
     ln -sf "$_manager_script" "$_symlink_path"
     
     echo "Manager script installed at $_manager_script"
-    echo "You can now run the manager using the 'udp' command."
+    echo "You can now run the manager using the 'agnudp' command."
 }
 
 
@@ -720,10 +720,18 @@ perform_install() {
 
     if [[ -n "$_is_fresh_install" ]]; then
         echo
-        echo -e "$(tbold)Congratulations! UDP has been successfully installed on your server.$(treset)"
-        echo "Use 'udp' command to access the manager."
+        echo -e "$(tbold)Congratulations! AGN-UDP has been successfully installed on your server.$(treset)"
+        echo "Use 'agnudp' command to access the manager."
 
         echo
+        echo -e "$(tbold)Client app AGN INJECTOR:$(treset)"
+        echo -e "$(tblue)https://play.google.com/store/apps/details?id=com.agn.injector$(treset)"
+        echo
+        echo -e "Follow me!"
+        echo
+        echo -e "\t+ Check out my website at $(tblue)https://www.khaledagn.me$(treset)"
+        echo -e "\t+ Follow me on Telegram: $(tblue)https://t.me/khaledagn$(treset)"
+        echo -e "\t+ Follow me on Facebook: $(tblue)https://facebook.com/itskhaledagn$(treset)"
         echo
     else
         restart_running_services
