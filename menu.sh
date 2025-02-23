@@ -12,6 +12,17 @@ touch "$USER_DB"
 # Set timezone to Manila/Philippines
 export TZ="Asia/Manila"
 
+# Function to get server IP
+get_server_ip() {
+    # Try to get IPv4 address, prioritizing interfaces with default routes
+    local ip=$(ip -4 route get 1 | awk '{print $7}' | head -1)
+    if [[ -z "$ip" ]]; then
+        # Fallback to hostname -I and take first IP
+        ip=$(hostname -I | awk '{print $1}')
+    fi
+    echo "$ip"
+}
+
 # Function to clear screen after command execution
 clear_after_command() {
     echo -e "\nPress Enter to continue..."
@@ -32,6 +43,20 @@ update_userpass_config() {
     jq ".auth.config = [$user_array]" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
 }
 
+display_connection_info() {
+    local username="$1"
+    local password="$2"
+    local server_ip=$(get_server_ip)
+    
+    echo -e "\n\e[1;33m═══════════ Connection Information ═══════════\e[0m"
+    echo -e "\e[1;32mServer IP   : \e[0m$server_ip"
+    echo -e "\e[1;32mUsername    : \e[0m$username"
+    echo -e "\e[1;32mPassword    : \e[0m$password"
+    echo -e "\e[1;32mUDP Port    : \e[0m36712"
+    echo -e "\e[1;32mOBFS        : \e[0mtfn"
+    echo -e "\e[1;33m═════════════════════════════════════════\e[0m"
+}
+
 add_user() {
     echo -e "\n\e[1;34mEnter username:\e[0m"
     read -r username
@@ -40,6 +65,7 @@ add_user() {
     sqlite3 "$USER_DB" "INSERT INTO users (username, password) VALUES ('$username', '$password');"
     if [[ $? -eq 0 ]]; then
         echo -e "\e[1;32mUser $username added successfully.\e[0m"
+        display_connection_info "$username" "$password"
         update_userpass_config
         restart_server
     else
@@ -56,6 +82,7 @@ edit_user() {
     sqlite3 "$USER_DB" "UPDATE users SET password = '$password' WHERE username = '$username';"
     if [[ $? -eq 0 ]]; then
         echo -e "\e[1;32mUser $username updated successfully.\e[0m"
+        display_connection_info "$username" "$password"
         update_userpass_config
         restart_server
     else
