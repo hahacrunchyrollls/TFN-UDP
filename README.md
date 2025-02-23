@@ -18,7 +18,7 @@ udp
 
 ## IMAGE
 
-![image](https://github.com/user-attachments/assets/b38a0036-f10c-4e41-b27c-c27107d7c657)
+
 
 ## Credits
 
