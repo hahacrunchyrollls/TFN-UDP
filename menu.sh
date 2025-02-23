@@ -13,13 +13,34 @@ touch "$USER_DB"
 export TZ="Asia/Manila"
 
 # Function to get server IP
+# Function to get server IP
 get_server_ip() {
-    # Try to get IPv4 address, prioritizing interfaces with default routes
-    local ip=$(ip -4 route get 1 | awk '{print $7}' | head -1)
+    # Try different methods to get the public IP
+    local ip=""
+    
+    # Method 1: Try curl with various IP services
+    if command -v curl >/dev/null 2>&1; then
+        ip=$(curl -s -4 ifconfig.me 2>/dev/null) || \
+        ip=$(curl -s -4 icanhazip.com 2>/dev/null) || \
+        ip=$(curl -s -4 ipecho.net/plain 2>/dev/null)
+    fi
+
+    # Method 2: Try wget if curl failed
+    if [[ -z "$ip" ]] && command -v wget >/dev/null 2>&1; then
+        ip=$(wget -qO- ifconfig.me 2>/dev/null) || \
+        ip=$(wget -qO- icanhazip.com 2>/dev/null)
+    fi
+
+    # Method 3: Fallback to local IP if public IP retrieval fails
     if [[ -z "$ip" ]]; then
-        # Fallback to hostname -I and take first IP
+        ip=$(ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '^127' | head -n 1)
+    fi
+
+    # If all methods fail, use hostname as last resort
+    if [[ -z "$ip" ]]; then
         ip=$(hostname -I | awk '{print $1}')
     fi
+
     echo "$ip"
 }
 
