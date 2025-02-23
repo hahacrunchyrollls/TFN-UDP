@@ -84,13 +84,6 @@ show_users() {
     clear_after_command
 }
 
-show_obfs() {
-    echo -e "\n\e[1;34mCurrent obfuscation string:\e[0m"
-    current_obfs=$(jq -r '.obfs.password' "$CONFIG_FILE")
-    echo -e "\e[1;32m$current_obfs\e[0m"
-    clear_after_command
-}
-
 change_up_speed() {
     echo -e "\n\e[1;34mEnter new upload speed (Mbps):\e[0m"
     read -r up_speed
@@ -166,12 +159,11 @@ show_menu() {
     echo -e "\e[1;32m[\e[0m2\e[1;32m]\e[0m Edit user password"
     echo -e "\e[1;32m[\e[0m3\e[1;32m]\e[0m Delete user"
     echo -e "\e[1;32m[\e[0m4\e[1;32m]\e[0m Show users"
-    echo -e "\e[1;32m[\e[0m5\e[1;32m]\e[0m Show obfuscation string"
-    echo -e "\e[1;32m[\e[0m6\e[1;32m]\e[0m Change upload speed"
-    echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Change download speed"
-    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Restart server"
-    echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Uninstall server"
-    echo -e "\e[1;32m[\e[0m10\e[1;32m]\e[0m Exit"
+    echo -e "\e[1;32m[\e[0m5\e[1;32m]\e[0m Change upload speed"
+    echo -e "\e[1;32m[\e[0m6\e[1;32m]\e[0m Change download speed"
+    echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Restart server"
+    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Uninstall server"
+    echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Exit"
     echo -e "\e[1;36m═══════════════════════════════════════\e[0m"
     echo -e "\e[1;32mEnter your choice:\e[0m"
 }
@@ -185,12 +177,11 @@ while true; do
         2) edit_user ;;
         3) delete_user ;;
         4) show_users ;;
-        5) show_obfs ;;
-        6) change_up_speed ;;
-        7) change_down_speed ;;
-        8) restart_server ;;
-        9) uninstall_server ;;
-        10) clear; exit 0 ;;
+        5) change_up_speed ;;
+        6) change_down_speed ;;
+        7) restart_server ;;
+        8) uninstall_server ;;
+        9) clear; exit 0 ;;
         *) echo -e "\e[1;31mInvalid choice. Please try again.\e[0m"; clear_after_command ;;
     esac
 done
