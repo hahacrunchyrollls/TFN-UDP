@@ -17,25 +17,21 @@ get_server_ip() {
     # Try different methods to get the public IP
     local ip=""
     
-    # Method 1: Try curl with various IP services
     if command -v curl >/dev/null 2>&1; then
         ip=$(curl -s -4 ifconfig.me 2>/dev/null) || \
         ip=$(curl -s -4 icanhazip.com 2>/dev/null) || \
         ip=$(curl -s -4 ipecho.net/plain 2>/dev/null)
     fi
 
-    # Method 2: Try wget if curl failed
     if [[ -z "$ip" ]] && command -v wget >/dev/null 2>&1; then
         ip=$(wget -qO- ifconfig.me 2>/dev/null) || \
         ip=$(wget -qO- icanhazip.com 2>/dev/null)
     fi
 
-    # Method 3: Fallback to local IP if public IP retrieval fails
     if [[ -z "$ip" ]]; then
         ip=$(ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '^127' | head -n 1)
     fi
 
-    # If all methods fail, use hostname as last resort
     if [[ -z "$ip" ]]; then
         ip=$(hostname -I | awk '{print $1}')
     fi
@@ -168,7 +164,6 @@ change_obfs() {
 }
 
 restart_server() {
-    change_obfs  # Add this to modify OBFS when restarting
     systemctl restart hysteria-server
     echo -e "\e[1;32mServer restarted successfully.\e[0m"
     if [[ "${FUNCNAME[1]}" == "main" ]]; then
@@ -186,7 +181,6 @@ uninstall_server() {
     rm -f /usr/local/bin/hysteria
     echo -e "\e[1;32mTFN-UDP server uninstalled successfully.\e[0m"
     
-    # Create a temporary script to delete the menu script itself
     cat > /tmp/remove_script.sh << EOF
 #!/bin/bash
 sleep 1
@@ -196,10 +190,8 @@ EOF
     
     chmod +x /tmp/remove_script.sh
     echo -e "\e[1;32mRemoving menu script...\e[0m"
-    # Execute the temporary script in the background
     nohup /tmp/remove_script.sh >/dev/null 2>&1 &
     
-    # Exit immediately
     exit 0
 }
 
@@ -226,7 +218,7 @@ show_menu() {
     echo -e "\e[1;32m[\e[0m5\e[1;32m]\e[0m Change upload speed"
     echo -e "\e[1;32m[\e[0m6\e[1;32m]\e[0m Change download speed"
     echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Change server"
-    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Change OBFS"
+    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Restart server"
     echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Uninstall server"
     echo -e "\e[1;32m[\e[0m10\e[1;32m]\e[0m Exit"
     echo -e "\e[1;36m═══════════════════════════════════════\e[0m"
