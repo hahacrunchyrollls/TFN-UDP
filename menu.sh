@@ -163,12 +163,13 @@ change_obfs() {
     echo -e "\e[1;32mOBFS method changed to $obfs_method successfully.\e[0m"
 }
 
-restart_server() {
-    systemctl restart hysteria-server
-    echo -e "\e[1;32mServer restarted successfully.\e[0m"
-    if [[ "${FUNCNAME[1]}" == "main" ]]; then
-        clear_after_command
-    fi
+display_ram_and_cores() {
+    local total_ram=$(free -m | awk '/Mem:/ { print $2 }')
+    local used_ram=$(free -m | awk '/Mem:/ { print $3 }')
+    local total_cores=$(nproc)
+
+    echo -e "\e[1;35mRAM Usage: $used_ram/$total_ram MB\e[0m"
+    echo -e "\e[1;36mCPU Cores: $total_cores\e[0m"
 }
 
 uninstall_server() {
@@ -205,6 +206,7 @@ show_banner() {
     echo -e "\e[1;33mServer Time : $(TZ='Asia/Manila' date '+%I:%M %p')"
     echo -e "Time Zone   : Manila/Philippines"
     echo -e "Date        : $(TZ='Asia/Manila' date '+%Y-%m-%d')\e[0m"
+    display_ram_and_cores
 }
 
 show_menu() {
@@ -218,7 +220,7 @@ show_menu() {
     echo -e "\e[1;32m[\e[0m5\e[1;32m]\e[0m Change upload speed"
     echo -e "\e[1;32m[\e[0m6\e[1;32m]\e[0m Change download speed"
     echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Change server"
-    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Restart server"
+    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Change OBFS method"
     echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Uninstall server"
     echo -e "\e[1;32m[\e[0m10\e[1;32m]\e[0m Exit"
     echo -e "\e[1;36m═══════════════════════════════════════\e[0m"
@@ -237,7 +239,7 @@ while true; do
         5) change_up_speed ;;
         6) change_down_speed ;;
         7) change_server ;;
-        8) restart_server ;;
+        8) change_obfs ;;
         9) uninstall_server ;;
         10) clear; exit 0 ;;
         *) echo -e "\e[1;31mInvalid choice. Please try again.\e[0m"; clear_after_command ;;
