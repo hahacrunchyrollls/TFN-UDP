@@ -153,7 +153,6 @@ change_server() {
     jq ".server = \"$server\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
     echo -e "\e[1;32mServer changed to $server successfully.\e[0m"
     restart_server
-    clear
     clear_after_command
 }
 
@@ -163,7 +162,6 @@ change_obfs() {
     jq ".obfs = \"$obfs_method\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
     echo -e "\e[1;32mOBFS method changed to $obfs_method successfully.\e[0m"
     restart_server
-    clear
     clear_after_command
 }
 
