@@ -165,6 +165,15 @@ change_obfs() {
     clear_after_command
 }
 
+restart_server() {
+    systemctl restart hysteria-server
+    if [[ $? -eq 0 ]]; then
+        echo -e "\e[1;32mServer restarted successfully.\e[0m"
+    else
+        echo -e "\e[1;31mError: Failed to restart the server.\e[0m"
+    fi
+}
+
 display_ram_and_cores() {
     local total_ram=$(free -m | awk '/Mem:/ { print $2 }')
     local used_ram=$(free -m | awk '/Mem:/ { print $3 }')
