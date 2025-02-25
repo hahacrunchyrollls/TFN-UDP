@@ -68,7 +68,7 @@ display_connection_info() {
     echo -e "\e[1;32mServer IP   : \e[0m$server_ip"
     echo -e "\e[1;32mUsername    : \e[0m$username"
     echo -e "\e[1;32mPassword    : \e[0m$password"
-    echo -e "\e[1;32mUDP Port    : \e[0m36712"
+    echo -e "\e[1;32mUDP Port    : \e[0m10000-65000"
     echo -e "\e[1;32mOBFS        : \e[0mtfn"
     echo -e "\e[1;33m═════════════════════════════════════════\e[0m"
 }
