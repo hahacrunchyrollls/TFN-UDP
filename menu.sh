@@ -153,6 +153,7 @@ change_server() {
     jq ".server = \"$server\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
     echo -e "\e[1;32mServer changed to $server successfully.\e[0m"
     restart_server
+    clear
     clear_after_command
 }
 
@@ -161,6 +162,9 @@ change_obfs() {
     read -r obfs_method
     jq ".obfs = \"$obfs_method\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
     echo -e "\e[1;32mOBFS method changed to $obfs_method successfully.\e[0m"
+    restart_server
+    clear
+    clear_after_command
 }
 
 display_ram_and_cores() {
@@ -168,8 +172,7 @@ display_ram_and_cores() {
     local used_ram=$(free -m | awk '/Mem:/ { print $3 }')
     local total_cores=$(nproc)
 
-    echo -e "\e[1;35mRAM Usage: $used_ram/$total_ram MB\e[0m"
-    echo -e "\e[1;36mCPU Cores: $total_cores\e[0m"
+    echo -e "\e[1;35mRAM Usage: $used_ram/$total_ram MB | CPU Cores: $total_cores\e[0m"
 }
 
 uninstall_server() {
@@ -212,17 +215,17 @@ show_banner() {
 show_menu() {
     echo -e "\e[1;36m╔═══════════════════════════════════════╗"
     echo -e "║           UDP Manager                 ║"
-    echo -e "╚═══════════════════════════════════════\e[0m"
+    echo -e "╚═══════════════════════════════════════╝\e[0m"
     echo -e "\e[1;32m[\e[0m1\e[1;32m]\e[0m Add new user"
     echo -e "\e[1;32m[\e[0m2\e[1;32m]\e[0m Edit user password"
     echo -e "\e[1;32m[\e[0m3\e[1;32m]\e[0m Delete user"
     echo -e "\e[1;32m[\e[0m4\e[1;32m]\e[0m Show users"
     echo -e "\e[1;32m[\e[0m5\e[1;32m]\e[0m Change upload speed"
     echo -e "\e[1;32m[\e[0m6\e[1;32m]\e[0m Change download speed"
-    echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Change server"
-    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Change OBFS method"
+    echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Change domain"
+    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Change obfs"
     echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Uninstall server"
-    echo -e "\e[1;32m[\e[0m10\e[1;32m]\e[0m Exit"
+    echo -e "\e[1;32m[\e[0m0\e[1;32m]\e[0m Exit"
     echo -e "\e[1;36m═══════════════════════════════════════\e[0m"
     echo -e "\e[1;32mEnter your choice:\e[0m"
 }
@@ -241,7 +244,7 @@ while true; do
         7) change_server ;;
         8) change_obfs ;;
         9) uninstall_server ;;
-        10) clear; exit 0 ;;
+        0) clear; exit 0 ;;
         *) echo -e "\e[1;31mInvalid choice. Please try again.\e[0m"; clear_after_command ;;
     esac
 done
