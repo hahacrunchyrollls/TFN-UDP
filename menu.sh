@@ -63,13 +63,14 @@ display_connection_info() {
     local username="$1"
     local password="$2"
     local server_ip=$(get_server_ip)
+    local obfs_method=$(jq -r ".obfs" "$CONFIG_FILE")
     
     echo -e "\n\e[1;33m═══════════ Connection Information ═══════════\e[0m"
     echo -e "\e[1;32mServer IP   : \e[0m$server_ip"
     echo -e "\e[1;32mUsername    : \e[0m$username"
     echo -e "\e[1;32mPassword    : \e[0m$password"
     echo -e "\e[1;32mUDP Port    : \e[0m10000-65000"
-    echo -e "\e[1;32mOBFS        : \e[0mtfn"
+    echo -e "\e[1;32mOBFS        : \e[0m$obfs_method"
     echo -e "\e[1;33m═════════════════════════════════════════\e[0m"
 }
 
