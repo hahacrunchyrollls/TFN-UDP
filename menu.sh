@@ -13,30 +13,24 @@ touch "$USER_DB"
 export TZ="Asia/Manila"
 
 # Function to get server IP
-# Function to get server IP
 get_server_ip() {
-    # Try different methods to get the public IP
     local ip=""
     
-    # Method 1: Try curl with various IP services
     if command -v curl >/dev/null 2>&1; then
         ip=$(curl -s -4 ifconfig.me 2>/dev/null) || \
         ip=$(curl -s -4 icanhazip.com 2>/dev/null) || \
         ip=$(curl -s -4 ipecho.net/plain 2>/dev/null)
     fi
 
-    # Method 2: Try wget if curl failed
     if [[ -z "$ip" ]] && command -v wget >/dev/null 2>&1; then
         ip=$(wget -qO- ifconfig.me 2>/dev/null) || \
         ip=$(wget -qO- icanhazip.com 2>/dev/null)
     fi
 
-    # Method 3: Fallback to local IP if public IP retrieval fails
     if [[ -z "$ip" ]]; then
         ip=$(ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '^127' | head -n 1)
     fi
 
-    # If all methods fail, use hostname as last resort
     if [[ -z "$ip" ]]; then
         ip=$(hostname -I | awk '{print $1}')
     fi
@@ -152,6 +146,15 @@ change_down_speed() {
     clear_after_command
 }
 
+change_obfs() {
+    echo -e "\n\e[1;34mEnter new obfuscation type (e.g., 'tls' or 'http'):\e[0m"
+    read -r obfs_type
+    jq ".obfs = \"$obfs_type\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+    echo -e "\e[1;32mObfuscation type changed to $obfs_type successfully.\e[0m"
+    restart_server
+    clear_after_command
+}
+
 restart_server() {
     systemctl restart hysteria-server
     echo -e "\e[1;32mServer restarted successfully.\e[0m"
@@ -170,7 +173,6 @@ uninstall_server() {
     rm -f /usr/local/bin/hysteria
     echo -e "\e[1;32mTFN-UDP server uninstalled successfully.\e[0m"
     
-    # Create a temporary script to delete the menu script itself
     cat > /tmp/remove_script.sh << EOF
 #!/bin/bash
 sleep 1
@@ -180,10 +182,8 @@ EOF
     
     chmod +x /tmp/remove_script.sh
     echo -e "\e[1;32mRemoving menu script...\e[0m"
-    # Execute the temporary script in the background
     nohup /tmp/remove_script.sh >/dev/null 2>&1 &
     
-    # Exit immediately
     exit 0
 }
 
@@ -209,9 +209,10 @@ show_menu() {
     echo -e "\e[1;32m[\e[0m4\e[1;32m]\e[0m Show users"
     echo -e "\e[1;32m[\e[0m5\e[1;32m]\e[0m Change upload speed"
     echo -e "\e[1;32m[\e[0m6\e[1;32m]\e[0m Change download speed"
-    echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Restart server"
-    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Uninstall server"
-    echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Exit"
+    echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Change obfuscation"
+    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Restart server"
+    echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Uninstall server"
+    echo -e "\e[1;32m[\e[0m0\e[1;32m]\e[0m Exit"
     echo -e "\e[1;36m═══════════════════════════════════════\e[0m"
     echo -e "\e[1;32mEnter your choice:\e[0m"
 }
@@ -227,9 +228,10 @@ while true; do
         4) show_users ;;
         5) change_up_speed ;;
         6) change_down_speed ;;
-        7) restart_server ;;
-        8) uninstall_server ;;
-        9) clear; exit 0 ;;
+        7) change_obfs ;;
+        8) restart_server ;;
+        9) uninstall_server ;;
+        0) clear; exit 0 ;;
         *) echo -e "\e[1;31mInvalid choice. Please try again.\e[0m"; clear_after_command ;;
     esac
 done
