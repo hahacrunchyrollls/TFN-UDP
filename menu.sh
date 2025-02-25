@@ -160,7 +160,15 @@ change_server() {
     clear_after_command
 }
 
+change_obfs() {
+    echo -e "\n\e[1;34mEnter the new OBFS method (e.g., tfn, tls, etc.):\e[0m"
+    read -r obfs_method
+    jq ".obfs = \"$obfs_method\"" "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+    echo -e "\e[1;32mOBFS method changed to $obfs_method successfully.\e[0m"
+}
+
 restart_server() {
+    change_obfs  # Add this to modify OBFS when restarting
     systemctl restart hysteria-server
     echo -e "\e[1;32mServer restarted successfully.\e[0m"
     if [[ "${FUNCNAME[1]}" == "main" ]]; then
@@ -218,7 +226,7 @@ show_menu() {
     echo -e "\e[1;32m[\e[0m5\e[1;32m]\e[0m Change upload speed"
     echo -e "\e[1;32m[\e[0m6\e[1;32m]\e[0m Change download speed"
     echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Change server"
-    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Restart server"
+    echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Change OBFS"
     echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Uninstall server"
     echo -e "\e[1;32m[\e[0m10\e[1;32m]\e[0m Exit"
     echo -e "\e[1;36m═══════════════════════════════════════\e[0m"
