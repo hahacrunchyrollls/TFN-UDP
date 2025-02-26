@@ -241,8 +241,7 @@ show_menu() {
     echo -e "\e[1;32m[\e[0m6\e[1;32m]\e[0m Change download speed"
     echo -e "\e[1;32m[\e[0m7\e[1;32m]\e[0m Change domain"
     echo -e "\e[1;32m[\e[0m8\e[1;32m]\e[0m Change obfs"
-    echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Change udp port"
-    echo -e "\e[1;32m[\e[0m10\e[1;32m]\e[0m Uninstall Script"
+    echo -e "\e[1;32m[\e[0m9\e[1;32m]\e[0m Uninstall Script"
     echo -e "\e[1;32m[\e[0m0\e[1;32m]\e[0m Exit"
     echo -e "\e[1;36m═══════════════════════════════════════\e[0m"
     echo -e "\e[1;32mEnter your choice:\e[0m"
@@ -261,8 +260,7 @@ while true; do
         6) change_down_speed ;;
         7) change_server ;;
         8) change_obfs ;;
-        9) change_udp_port ;;
-        10) uninstall_server;;
+        9) uninstall_server;;
         0) clear; exit 0 ;;
         *) echo -e "\e[1;31mInvalid choice. Please try again.\e[0m"; clear_after_command ;;
     esac
