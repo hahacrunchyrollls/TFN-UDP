@@ -1,0 +1,519 @@
+#!/bin/bash
+# 
+# 
+# -----------------------------------------------------------
+
+menu() {
+info > /dev/null 2>&1
+clear
+echo -e "\e[31m╔══════════════════════════════════════════════════╗\e[0m"
+echo -e "\e[31m║\e[0m            Custom Script v0.1.1                  \e[31m║\e[0m"
+echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
+echo -e "\e[31m║\e[0m          $current_datetime         \e[31m║\e[0m"
+echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
+echo -e "\e[31m║\e[0m OS: $info $codename              \e[31m║\e[0m"
+echo -e "\e[31m║\e[0m Ram: ${a} [ ${b} ] - ${c}  |  Core: ${d} - ${e}   \e[31m║\e[0m"
+echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
+echo -e "\e[31m║\e[0m Online: $j        Users: $i        Exp: $k         \e[31m║\e[0m"
+echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
+echo -e "\e[31m║\e[0m [1] Create User                                  \e[31m║\e[0m"
+echo -e "\e[31m║\e[0m [2] Remove User                                  \e[31m║\e[0m"
+echo -e "\e[31m║\e[0m [3] Banner                                       \e[31m║\e[0m"
+echo -e "\e[31m║\e[0m [4] BadVPN $l                                     \e[31m║\e[0m"
+echo -e "\e[31m║\e[0m [5] Optimize                                     \e[31m║\e[0m"
+echo -e "\e[31m║\e[0m [0] Exit                                         \e[31m║\e[0m"
+echo -e "\e[31m╚══════════════════════════════════════════════════╝\e[0m"
+read -p " option: " input
+
+case $input in
+1) create_user ;;
+2) delete_user ;;
+3) banner ;;
+4) badvpn_udpgw ;;
+5) optimize ;;
+0) clear && return ;;
+*) menu ;;
+esac
+}
+
+menu_top() {
+info > /dev/null 2>&1
+clear
+echo -e "\e[31m╔══════════════════════════════════════════════════╗\e[0m"
+echo -e "\e[31m║\e[0m            Custom Script v0.1.1                  \e[31m║\e[0m"
+echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
+echo -e "\e[31m║\e[0m          $current_datetime                       \e[31m║\e[0m"
+echo -e "\e[31m╚══════════════════════════════════════════════════╝\e[0m"
+}
+
+info() {
+timedatectl | grep -q "Time zone: Asia/Manila" || sudo timedatectl set-timezone Asia/Manila
+local_timezone=$(timedatectl | awk '/Time zone/ {print $3}')
+TZ=":Asia/Manila"
+current_datetime=$(TZ="$TZ" date +"%a - %d %b %Y - %-l:%M %p %Z")
+
+info=$(lsb_release -sd | grep -o '^[^ ]*.*')
+codename="($(lsb_release -sc | grep -o '^[^ ]*.*'))"
+
+if [[ "$info" =~ "$codename" ]]; then
+codename=""
+fi
+
+if ! grep -q "/bin/false" /etc/shells; then
+echo "/bin/false" >> /etc/shells
+fi
+
+a=$(free -h | awk '/Mem:/ {print $2}' | sed 's/i//')
+b=$(free -h | awk '/Mem:/ {print $3}' | sed 's/i//')
+c=$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2}')
+
+d=$(nproc)
+e=$(top -bn1 | awk '/Cpu/ { cpu = 100 - $8 "%"}; END { print cpu }')
+f=$(ps -x | grep sshd | grep -v root | grep priv | wc -l)
+g=$(ps aux | grep dropbear | grep -v grep | wc -l); g=$((g > 0 ? g - 1 : 0))
+h=$(grep -c "10.8.0" /etc/openvpn/openvpn-status.log) || h="0"
+i=$(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd | wc -l)
+echo $(hostname -I | awk '{print $1}') > /etc/ip
+
+j=$(($f + $g + $h))
+
+exp=()
+for _user in $(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd); do
+if chage -l $_user | grep -q "Account expires" && [ "$(date +%s)" -gt "$(date '+%s' -d "$(chage -l $_user | grep "Account expires" | awk -F ': ' '{print $2}')")" ]; then
+exp+=( "$_user" )
+fi
+done
+k=${#exp[@]}
+
+if systemctl is-active --quiet badvpn-udpgw.service && systemctl is-enabled --quiet badvpn-udpgw.service; then
+l="\e[32m•\e[0m"
+else
+l="•"
+fi
+}
+
+function banner {
+if grep -q '^Banner /etc/banner' /etc/ssh/sshd_config; then
+    banner_active="\e[32m•\e[0m"
+else
+    banner_active="•"
+fi
+menu_top
+echo
+echo -e " [1] enable/disable banner $banner_active"
+echo " [2] edit banner"
+echo " [0] return"
+echo
+read -p " option: " choice
+case $choice in
+1) enable_disable_banner ;;
+2) edit_banner ;;
+0|*) menu ;;
+esac
+}
+
+function enable_disable_banner() {
+    echo
+    if grep -q '^Banner /etc/banner' /etc/ssh/sshd_config; then
+        sed -i '/^Banner \/etc\/banner/d' /etc/ssh/sshd_config
+        echo " Banner disabled."
+    else
+        echo -e "\nBanner /etc/banner" | tee -a /etc/ssh/sshd_config > /dev/null 2>&1
+        echo " Banner enabled."
+
+    fi
+    systemctl restart ssh > /dev/null 2>&1
+    systemctl restart sshd > /dev/null 2>&1
+    read -p ""
+    banner
+
+}
+
+function edit_banner(){
+nano /etc/banner
+banner
+}
+
+function badvpn_udpgw {
+install_badvpn_udpgw() {
+menu_top
+echo " exec badvpn_udpgw service."
+badvpn_32="https://raw.githubusercontent.com/daybreakersx/premscript/master/badvpn-udpgw"
+badvpn_64="https://raw.githubusercontent.com/daybreakersx/premscript/master/badvpn-udpgw64"
+
+rm -rf /usr/bin/badvpn-udpgw
+curl -o /usr/bin/badvpn-udpgw "$([[ $(uname -m) == "x86_64" ]] && echo $badvpn_64 || echo $badvpn_32)" > /dev/null 2>&1
+
+rm -rf /etc/systemd/system/badvpn-udpgw.service
+cat > /etc/systemd/system/badvpn-udpgw.service << END
+[Unit]
+Description=BADVPN UDPGW Service v1
+Documentation=https://phcorner.net/members/phc_jerico.1922181/
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1024 --max-connections-for-client 2 --client-socket-sndbuf 10000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+END
+
+chmod +x /usr/bin/badvpn-udpgw
+chmod +x /etc/systemd/system/badvpn-udpgw.service
+
+systemctl daemon-reload > /dev/null 2>&1
+systemctl stop badvpn-udpgw.service > /dev/null 2>&1
+systemctl enable badvpn-udpgw.service > /dev/null 2>&1
+systemctl start badvpn-udpgw.service > /dev/null 2>&1
+
+script -q -c "systemctl status --no-pager -l badvpn-udpgw.service" /dev/null | awk '{print " "$0}'
+read -p " badvpn-udpgw.service installed successfully."
+menu
+}
+
+restart_badvpn_udpgw() {
+echo
+echo " restarting badvpn-udpgw.service."
+systemctl daemon-reload > /dev/null 2>&1
+systemctl stop badvpn-udpgw.service > /dev/null 2>&1
+systemctl enable badvpn-udpgw.service > /dev/null 2>&1
+systemctl start badvpn-udpgw.service > /dev/null 2>&1
+script -q -c "systemctl status --no-pager -l badvpn-udpgw.service" /dev/null | awk '{print " "$0}'
+read -p " badvpn-udpgw.service restarted successfully."
+badvpn_udpgw
+}
+
+uninstall_badvpn_udpgw() {
+echo
+echo " stopping badvpn-udpgw service."
+systemctl stop badvpn-udpgw.service > /dev/null 2>&1
+systemctl disable badvpn-udpgw.service > /dev/null 2>&1
+script -q -c "systemctl status --no-pager -l badvpn-udpgw.service" /dev/null | awk '{print " "$0}'
+rm -rf /usr/bin/badvpn-udpgw > /dev/null 2>&1
+rm -rf /etc/systemd/system/badvpn-udpgw.service > /dev/null 2>&1
+systemctl daemon-reload > /dev/null 2>&1
+read -p " badvpn-udpgw.service removed successfully."
+menu
+}
+
+badvpn_udpgw_status(){
+echo
+script -q -c "systemctl status --no-pager -l badvpn-udpgw.service" /dev/null | awk '{print " "$0}'
+read -p " badvpn-udpgw.service status."
+badvpn_udpgw
+}
+
+badvpn_udpgw_menu() {
+menu_top
+echo
+echo " [1] restart badvpn-udpgw"
+echo " [2] status badvpn-udpgw"
+echo " [3] uninstall badvpn-udpgw"
+echo " [0] return"
+echo
+read -p " option: " choice
+case $choice in
+1) restart_badvpn_udpgw ;;
+2) badvpn_udpgw_status ;;
+3) uninstall_badvpn_udpgw ;;
+0|*) menu ;;
+esac
+}
+
+badvpn_checkpoint() {
+if ! command -v badvpn-udpgw &> /dev/null; then
+install_badvpn_udpgw
+else
+badvpn_udpgw_menu
+fi
+}
+
+badvpn_checkpoint
+}
+
+optimize() {
+
+start_optimization() {
+echo
+echo " optimization started."
+echo
+mem_before=$(free -m | awk 'NR==2{print $3}')
+echo " Previous RAM consumption: ${mem_before} MB"
+sync; echo 1 > /proc/sys/vm/drop_caches
+swapoff -a && swapon -a
+mem_after=$(free -m | awk 'NR==2{print $3}')
+if ((mem_after < mem_before)); then
+mem_after=$mem_before
+fi
+freed_ram=$((mem_after - mem_before))
+echo " Current RAM consumption: ${mem_after} MB"
+echo " Freed RAM: ${freed_ram} MB"
+echo
+read -p " optimization completed."
+optimize
+}
+
+schedule_optimization() {
+menu_top
+echo " schedule optimization"
+echo
+while true; do
+read -p " Enter the interval (in hours): " interval
+if [[ $interval =~ ^[0-9]+$ ]]; then
+break
+else
+read  " Invalid input. Please enter a number."
+schedule_optimization
+fi
+done
+next_hour=$(( ($(date +%l) + 1) % 12 ))
+if [ $next_hour -eq 0 ]; then
+next_hour=1
+fi
+
+next_hr=$((next_hour + 12))
+
+am_pm=$(date +%P)
+next_date=$(date +%Y-%m-%d)
+
+rm -rf /etc/systemd/system/optimize.service
+cat > /etc/systemd/system/optimize.service << END
+[Unit]
+Description=Optimization Service v1
+Documentation=https://phcorner.net/members/phc_jerico.1922181/
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'sync; echo 1 > /proc/sys/vm/drop_caches && swapoff -a && swapon -a'
+
+[Install]
+WantedBy=multi-user.target
+END
+
+rm -rf /etc/systemd/system/optimize.timer
+cat > /etc/systemd/system/optimize.timer << END
+[Unit]
+Description=Optimize Timer v0.1.1
+Documentation=https://phcorner.net/members/phc_jerico.1922181/
+
+[Timer]
+OnCalendar=${next_date} ${next_hr}:00:00
+Persistent=true
+RandomizedDelaySec=0
+OnUnitActiveSec=${interval}h
+
+[Install]
+WantedBy=timers.target
+END
+
+systemctl daemon-reload > /dev/null 2>&1
+systemctl stop optimize.timer > /dev/null 2>&1
+systemctl enable optimize.timer > /dev/null 2>&1
+systemctl start optimize.timer > /dev/null 2>&1
+systemctl enable --now optimize.timer > /dev/null 2>&1
+echo
+script -q -c "systemctl status --no-pager -l optimize.timer" /dev/null | awk '{print " "$0}'
+read -p " Scheduled to start from ${next_hour}${am_pm} (${next_date}) and then every ${interval} hours."
+optimize
+}
+
+uninstall_optimization() {
+echo
+systemctl daemon-reload > /dev/null 2>&1
+systemctl stop optimize.timer > /dev/null 2>&1
+systemctl disable --now optimize.timer > /dev/null 2>&1
+echo
+script -q -c "systemctl status --no-pager -l optimize.timer" /dev/null | awk '{print " "$0}'
+rm -rf /etc/systemd/system/optimize.timer > /dev/null 2>&1
+rm -rf /etc/systemd/system/optimize.service > /dev/null 2>&1
+read -p " optimize.service removed successfully."
+optimize
+}
+
+optimize_menu() {
+if systemctl is-active --quiet optimize.timer && systemctl is-enabled --quiet optimize.timer; then
+opt="\e[32m•\e[0m"
+else
+opt="•"
+fi
+
+menu_top
+echo
+echo " [1] start optimization"
+echo -e " [2] schedule optimization $opt"
+echo " [3] uninstall optimization"
+echo " [0] return"
+echo
+read -p " option: " choice
+case $choice in
+1) start_optimization ;;
+2) schedule_optimization ;;
+3) uninstall_optimization ;;
+*|0) menu;;
+esac
+}
+
+optimize_menu
+}
+
+function create_user {
+info > /dev/null 2>&1
+local users=( $(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd) )
+menu_top
+read -p " Enter user: " username
+if [ -z "$username" ] || [ "$username" == "0" ]; then
+menu
+return
+fi
+if (( ${#username} < 3 )); then
+echo " username must be at least 3 characters long."
+read -p ""
+create_user
+return
+fi
+
+for existing_user in "${users[@]}"; do
+if [ "$existing_user" = "$username" ]; then
+echo " user '$username' already exists."
+read -p ""
+create_user
+return
+fi
+done
+
+read -p " Enter pass: " password
+if [ -z "$password" ]; then
+echo " password cannot be empty."
+read -p ""
+create_user
+return
+fi
+read -p " Enter validity (days): " days
+if [ -z "$days" ]; then
+echo " validity (days) cannot be empty."
+read -p ""
+create_user
+return
+fi
+expiry=$(date -d "+$days days" +%Y-%m-%d)
+expiry_=$(date -d "$expiry" +"%d %b %Y")
+useradd $username -M -s /bin/false -p $(openssl passwd -1 $password) -e $expiry > /dev/null 2>&1
+menu_top
+echo " user created successfully."
+echo
+echo " User : $username"
+echo " Pass : $password"
+echo " Exp  : $expiry ($expiry_)"
+echo " Days : $days"
+echo " Nameserver : phc.jericoo.site"
+echo " Public Key : 7078e879c55e69af888ea9a94e07f92cf49f380f942b3dd91a3d9d09fbd3ce0f"
+echo " SSH Port   : 22"
+echo " Squid Port : 8080"
+read -p ""
+menu
+}
+
+function delete_user {
+info > /dev/null 2>&1
+menu_top
+echo " Delete Users"
+echo
+
+expired_users() {
+local exp=()
+local now=$(date +%s)
+for _user in $(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd); do
+local expires=$(chage -l $_user | awk -F ': ' '/Account expires/{print $2}')
+if [ "$expires" = "never" ]; then
+continue
+elif [ -n "$expires" ]; then
+if [[ "$(date -d "$expires" +%s)" =~ ^[0-9]+$ ]]; then
+local expire_date=$(date -d "$expires" +%s)
+if [ "$now" -gt "$expire_date" ]; then
+exp+=( "$_user" )
+fi
+fi
+fi
+done
+
+if [ ${#exp[@]} -eq 0 ]; then
+echo
+echo " no expired users found."
+return 1
+fi
+echo
+echo " The following users will be deleted:"
+for user in "${exp[@]}"; do
+echo " $user"
+done
+echo
+read -p " Delete all expired users? [y/n] " confirm
+if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
+echo " operation cancelled."
+return 1
+fi
+
+for user in "${exp[@]}"; do
+userdel -f $user > /dev/null 2>&1
+ps -ef | grep -w "$user" | awk '{print $2}' | xargs kill -9 > /dev/null 2>&1
+echo " User '$user' has been removed."
+done
+echo
+echo " all expired users have been deleted."
+}
+
+local users=( $(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd) )
+if [ ${#users[@]} -eq 0 ]; then
+echo " no users exist."
+else
+local i=1
+for user in "${users[@]}"; do
+echo " [$i] $user"
+((i++))
+done
+fi
+
+echo
+echo " [e] remove expired users"
+echo " [0] return"
+echo
+read -p " option: " option
+
+case "$option" in
+0)
+menu
+;;
+e)
+expired_users
+read -p ""
+delete_user
+;;
+[1-9]*)
+if [ "$option" -le "${#users[@]}" ]; then
+local username=${users[$((option-1))]}
+userdel -f $username > /dev/null 2>&1
+ps -ef | grep -w "$username" | awk '{print $2}' | xargs kill -9 > /dev/null 2>&1
+echo
+echo " user '$username' has been removed."
+read -p ""
+delete_user
+else
+echo
+echo " Invalid option."
+read -p ""
+delete_user
+fi
+;;
+*)
+if [ -z "$option" ]; then
+menu
+else
+delete_user
+fi
+;;
+esac
+}
+menu
