@@ -7,8 +7,6 @@ menu() {
 info > /dev/null 2>&1
 clear
 echo -e "\e[31m╔══════════════════════════════════════════════════╗\e[0m"
-echo -e "\e[31m║\e[0m            Custom Script v0.1.1                  \e[31m║\e[0m"
-echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
 echo -e "\e[31m║\e[0m          $current_datetime        \e[31m║\e[0m"
 echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
 echo -e "\e[31m║\e[0m OS: $info $codename              \e[31m║\e[0m"
