@@ -7,19 +7,14 @@ menu() {
 info > /dev/null 2>&1
 clear
 echo -e "\e[31m╔══════════════════════════════════════════════════╗\e[0m"
-echo -e "\e[31m║\e[0m          $current_datetime        \e[31m║\e[0m"
+echo -e "\e[31m║\e[0m Online: $j        Users: $i        Exp: $k          "
 echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
-echo -e "\e[31m║\e[0m OS: $info $codename              \e[31m║\e[0m"
-echo -e "\e[31m║\e[0m Ram: ${a} [ ${b} ] - ${c}  |  Core: ${d} - ${e}   \e[31m║\e[0m"
-echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
-echo -e "\e[31m║\e[0m Online: $j        Users: $i        Exp: $k          \e[31m║\e[0m"
-echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
-echo -e "\e[31m║\e[0m [1] Create User                                  \e[31m║\e[0m"
-echo -e "\e[31m║\e[0m [2] Remove User                                  \e[31m║\e[0m"
-echo -e "\e[31m║\e[0m [3] Banner                                       \e[31m║\e[0m"
-echo -e "\e[31m║\e[0m [4] BadVPN $l                                     \e[31m║\e[0m"
-echo -e "\e[31m║\e[0m [5] Optimize                                     \e[31m║\e[0m"
-echo -e "\e[31m║\e[0m [0] Exit                                         \e[31m║\e[0m"
+echo -e "\e[31m║\e[0m [1] Create User                                  "
+echo -e "\e[31m║\e[0m [2] Remove User                                  "
+echo -e "\e[31m║\e[0m [3] Banner                                       "
+echo -e "\e[31m║\e[0m [4] BadVPN $l                                    "
+echo -e "\e[31m║\e[0m [5] Optimize                                     "
+echo -e "\e[31m║\e[0m [0] Exit                                         "
 echo -e "\e[31m╚══════════════════════════════════════════════════╝\e[0m"
 read -p " option: " input
 
