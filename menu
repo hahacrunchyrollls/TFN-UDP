@@ -12,8 +12,6 @@ echo -e "\e[31m╠════════════════════�
 echo -e "\e[31m║\e[0m [1] Create User                                  "
 echo -e "\e[31m║\e[0m [2] Remove User                                  "
 echo -e "\e[31m║\e[0m [3] Banner                                       "
-echo -e "\e[31m║\e[0m [4] BadVPN $l                                    "
-echo -e "\e[31m║\e[0m [5] Optimize                                     "
 echo -e "\e[31m║\e[0m [0] Exit                                         "
 echo -e "\e[31m╚══════════════════════════════════════════════════╝\e[0m"
 read -p " option: " input
@@ -22,8 +20,6 @@ case $input in
 1) create_user ;;
 2) delete_user ;;
 3) banner ;;
-4) badvpn_udpgw ;;
-5) optimize ;;
 0) clear && return ;;
 *) menu ;;
 esac
