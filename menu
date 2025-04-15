@@ -9,10 +9,10 @@ clear
 echo -e "\e[31m╔══════════════════════════════════════════════════╗\e[0m"
 echo -e "\e[31m║\e[0m Online: $j        Users: $i        Exp: $k          "
 echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
-echo -e "\e[31m║\e[0m [1] Create User                                  "
-echo -e "\e[31m║\e[0m [2] Remove User                                  "
-echo -e "\e[31m║\e[0m [3] Banner                                       "
-echo -e "\e[31m║\e[0m [0] Exit                                         "
+echo -e "\e[31m║\e[0m 1) Create User                                  "
+echo -e "\e[31m║\e[0m 2) Remove User                                  "
+echo -e "\e[31m║\e[0m 3) Banner                                       "
+echo -e "\e[31m║\e[0m 0) Exit                                         "
 echo -e "\e[31m╚══════════════════════════════════════════════════╝\e[0m"
 read -p " option: " input
 
@@ -28,11 +28,6 @@ esac
 menu_top() {
 info > /dev/null 2>&1
 clear
-echo -e "\e[31m╔══════════════════════════════════════════════════╗\e[0m"
-echo -e "\e[31m║\e[0m            Custom Script v0.1.1                  \e[31m║\e[0m"
-echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
-echo -e "\e[31m║\e[0m          $current_datetime        \e[31m║\e[0m"
-echo -e "\e[31m╚══════════════════════════════════════════════════╝\e[0m"
 }
 
 info() {
@@ -89,9 +84,9 @@ else
 fi
 menu_top
 echo
-echo -e " [1] enable/disable banner $banner_active"
-echo " [2] edit banner"
-echo " [0] return"
+echo -e " 1) enable/disable banner $banner_active"
+echo " 2) edit banner"
+echo " 0) return"
 echo
 read -p " option: " choice
 case $choice in
