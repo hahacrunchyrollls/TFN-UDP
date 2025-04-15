@@ -6,21 +6,18 @@
 menu() {
 info > /dev/null 2>&1
 clear
-echo -e "\e[31m╔══════════════════════════════════════════════════╗\e[0m"
-echo -e "\e[31m║\e[0m Online: $j        Users: $i        Exp: $k          "
-echo -e "\e[31m╠══════════════════════════════════════════════════╣\e[0m"
-echo -e "\e[31m║\e[0m 1) Create User                                  "
-echo -e "\e[31m║\e[0m 2) Remove User                                  "
-echo -e "\e[31m║\e[0m 3) Banner                                       "
-echo -e "\e[31m║\e[0m 0) Exit                                         "
-echo -e "\e[31m╚══════════════════════════════════════════════════╝\e[0m"
+echo -e " Online: $j        Users: $i        Exp: $k          "
+echo -e " 1) Create User                                  "
+echo -e " 2) Remove User                                  "
+echo -e " 3) Banner                                       "
+echo -e " 0) Exit                                         "
 read -p " option: " input
 
 case $input in
 1) create_user ;;
 2) delete_user ;;
 3) banner ;;
-0) clear && return ;;
+0) return ;;
 *) menu ;;
 esac
 }
