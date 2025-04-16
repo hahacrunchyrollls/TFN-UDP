@@ -6,18 +6,23 @@
 menu() {
 info > /dev/null 2>&1
 clear
-echo -e " Online: $j        Users: $i        Exp: $k          "
-echo -e " 1) Create User                                  "
-echo -e " 2) Remove User                                  "
-echo -e " 3) Banner                                       "
-echo -e " 0) Exit                                         "
+echo -e " OS: $info $codename                              "
+echo -e " Ram: ${a} [ ${b} ] - ${c}  "
+echo -e "--------------------------------------------------"
+echo -e " Online: $j        Users: $i        Exp: $k       "
+echo -e "--------------------------------------------------"
+echo -e " [1] Create User                                  "
+echo -e " [2] Remove User                                  "
+echo -e " [3] Banner                                       "
+echo -e " [0] Exit                                         "
+echo -e "--------------------------------------------------"
 read -p " option: " input
 
 case $input in
 1) create_user ;;
 2) delete_user ;;
 3) banner ;;
-0) return ;;
+0) clear && return ;;
 *) menu ;;
 esac
 }
@@ -26,12 +31,6 @@ menu_top() {
 info > /dev/null 2>&1
 clear
 }
-
-info() {
-timedatectl | grep -q "Time zone: Asia/Manila" || sudo timedatectl set-timezone Asia/Manila
-local_timezone=$(timedatectl | awk '/Time zone/ {print $3}')
-TZ=":Asia/Manila"
-current_datetime=$(TZ="$TZ" date +"%a - %d %b %Y - %-l:%M %p %Z")
 
 info=$(lsb_release -sd | grep -o '^[^ ]*.*')
 codename="($(lsb_release -sc | grep -o '^[^ ]*.*'))"
@@ -48,8 +47,6 @@ a=$(free -h | awk '/Mem:/ {print $2}' | sed 's/i//')
 b=$(free -h | awk '/Mem:/ {print $3}' | sed 's/i//')
 c=$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2}')
 
-d=$(nproc)
-e=$(top -bn1 | awk '/Cpu/ { cpu = 100 - $8 "%"}; END { print cpu }')
 f=$(ps -x | grep sshd | grep -v root | grep priv | wc -l)
 g=$(ps aux | grep dropbear | grep -v grep | wc -l); g=$((g > 0 ? g - 1 : 0))
 h=$(grep -c "10.8.0" /etc/openvpn/openvpn-status.log) || h="0"
@@ -66,13 +63,6 @@ fi
 done
 k=${#exp[@]}
 
-if systemctl is-active --quiet badvpn-udpgw.service && systemctl is-enabled --quiet badvpn-udpgw.service; then
-l="\e[32m•\e[0m"
-else
-l="•"
-fi
-}
-
 function banner {
 if grep -q '^Banner /etc/banner' /etc/ssh/sshd_config; then
     banner_active="\e[32m•\e[0m"
@@ -81,9 +71,9 @@ else
 fi
 menu_top
 echo
-echo -e " 1) enable/disable banner $banner_active"
-echo " 2) edit banner"
-echo " 0) return"
+echo -e " [1] enable/disable banner $banner_active"
+echo " [2] edit banner"
+echo " [0] return"
 echo
 read -p " option: " choice
 case $choice in
@@ -105,7 +95,7 @@ function enable_disable_banner() {
     fi
     systemctl restart ssh > /dev/null 2>&1
     systemctl restart sshd > /dev/null 2>&1
-    read -p ""
+    read -p "enet "
     banner
 
 }
@@ -126,7 +116,7 @@ return
 fi
 if (( ${#username} < 3 )); then
 echo " username must be at least 3 characters long."
-read -p ""
+read -p "return "
 create_user
 return
 fi
@@ -134,7 +124,7 @@ fi
 for existing_user in "${users[@]}"; do
 if [ "$existing_user" = "$username" ]; then
 echo " user '$username' already exists."
-read -p ""
+read -p "return "
 create_user
 return
 fi
@@ -143,14 +133,14 @@ done
 read -p " Enter pass: " password
 if [ -z "$password" ]; then
 echo " password cannot be empty."
-read -p ""
+read -p "return "
 create_user
 return
 fi
 read -p " Enter validity (days): " days
 if [ -z "$days" ]; then
 echo " validity (days) cannot be empty."
-read -p ""
+read -p "return "
 create_user
 return
 fi
@@ -164,11 +154,8 @@ echo " User : $username"
 echo " Pass : $password"
 echo " Exp  : $expiry ($expiry_)"
 echo " Days : $days"
-echo " Nameserver : phc.jericoo.site"
-echo " Public Key : 7078e879c55e69af888ea9a94e07f92cf49f380f942b3dd91a3d9d09fbd3ce0f"
-echo " SSH Port   : 22"
-echo " Squid Port : 8080"
-read -p ""
+
+read -p "return"
 menu
 }
 
@@ -234,7 +221,7 @@ fi
 
 echo
 echo " [e] remove expired users"
-echo " [0] return"
+echo " [0] return "
 echo
 read -p " option: " option
 
@@ -244,7 +231,7 @@ menu
 ;;
 e)
 expired_users
-read -p ""
+read -p "return"
 delete_user
 ;;
 [1-9]*)
@@ -254,12 +241,12 @@ userdel -f $username > /dev/null 2>&1
 ps -ef | grep -w "$username" | awk '{print $2}' | xargs kill -9 > /dev/null 2>&1
 echo
 echo " user '$username' has been removed."
-read -p ""
+read -p "return "
 delete_user
 else
 echo
 echo " Invalid option."
-read -p ""
+read -p "return "
 delete_user
 fi
 ;;
