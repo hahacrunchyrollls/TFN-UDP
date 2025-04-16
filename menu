@@ -1,55 +1,66 @@
 #!/bin/bash
-# 
-# 
+
+# -----------------------------------------------------------
+# Improved and Fixed Script
 # -----------------------------------------------------------
 
-menu() {
-info > /dev/null 2>&1
-clear
-echo -e " OS: $info $codename                              "
-echo -e " Ram: ${a} [ ${b} ] - ${c}  "
-echo -e "--------------------------------------------------"
-echo -e " Online: $j        Users: $i        Exp: $k       "
-echo -e "--------------------------------------------------"
-echo -e " [1] Create User                                  "
-echo -e " [2] Remove User                                  "
-echo -e " [3] Banner                                       "
-echo -e " [0] Exit                                         "
-echo -e "--------------------------------------------------"
-read -p " option: " input
+# Blue color theme variables
+BLUE="\e[34m"
+LIGHT_BLUE="\e[94m"
+CYAN="\e[36m"
+BOLD="\e[1m"
+NC="\e[0m" # No Color
+HEADER="${BLUE}${BOLD}"
+OPTION="${CYAN}"
+NORMAL="${NC}"
+HIGHLIGHT="${LIGHT_BLUE}"
 
-case $input in
-1) create_user ;;
-2) delete_user ;;
-3) banner ;;
-0) clear && return ;;
-*) menu ;;
-esac
+menu() {
+    clear
+    echo -e "${HEADER}╔══════════════════════════════════════════════════╗${NORMAL}"
+    echo -e " OS: ${HIGHLIGHT}$info $codename${NORMAL}"
+    echo -e " RAM: ${HIGHLIGHT}${a} [ ${b} ] - ${c}${NORMAL}"
+    echo -e "${HEADER}╠══════════════════════════════════════════════════╣${NORMAL}"
+    echo -e " Online: ${HIGHLIGHT}$j${NORMAL}        Users: ${HIGHLIGHT}$i${NORMAL}        Exp: ${HIGHLIGHT}$k${NORMAL}"
+    echo -e "${HEADER}╠══════════════════════════════════════════════════╣${NORMAL}"
+    echo -e " ${OPTION}[1]${NORMAL} Create User"
+    echo -e " ${OPTION}[2]${NORMAL} Remove User"
+    echo -e " ${OPTION}[3]${NORMAL} Banner"
+    echo -e " ${OPTION}[0]${NORMAL} Exit"
+    echo -e "${HEADER}╚══════════════════════════════════════════════════╝${NORMAL}"
+    read -p "Option: " input
+
+    case $input in
+        1) create_user ;;
+        2) delete_user ;;
+        3) banner ;;
+        0) clear && exit ;;
+        *) echo -e "${HIGHLIGHT}Invalid option. Try again.${NORMAL}" && menu ;;
+    esac
 }
 
 menu_top() {
-info > /dev/null 2>&1
-clear
+    clear
 }
 
-info=$(lsb_release -sd | grep -o '^[^ ]*.*')
-codename="($(lsb_release -sc | grep -o '^[^ ]*.*'))"
+info=$(lsb_release -sd | grep -o '^[^ ]*.*' 2>/dev/null)
+codename="($(lsb_release -sc | grep -o '^[^ ]*.*' 2>/dev/null))"
 
 if [[ "$info" =~ "$codename" ]]; then
-codename=""
+    codename=""
 fi
 
 if ! grep -q "/bin/false" /etc/shells; then
-echo "/bin/false" >> /etc/shells
+    echo "/bin/false" >> /etc/shells
 fi
 
 a=$(free -h | awk '/Mem:/ {print $2}' | sed 's/i//')
 b=$(free -h | awk '/Mem:/ {print $3}' | sed 's/i//')
-c=$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2}')
+c=$(free -m | awk 'NR==2 {printf "%.2f%%", $3*100/$2}')
 
 f=$(ps -x | grep sshd | grep -v root | grep priv | wc -l)
 g=$(ps aux | grep dropbear | grep -v grep | wc -l); g=$((g > 0 ? g - 1 : 0))
-h=$(grep -c "10.8.0" /etc/openvpn/openvpn-status.log) || h="0"
+h=$(grep -c "10.8.0" /etc/openvpn/openvpn-status.log 2>/dev/null || echo "0")
 i=$(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd | wc -l)
 echo $(hostname -I | awk '{print $1}') > /etc/ip
 
@@ -57,206 +68,120 @@ j=$(($f + $g + $h))
 
 exp=()
 for _user in $(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd); do
-if chage -l $_user | grep -q "Account expires" && [ "$(date +%s)" -gt "$(date '+%s' -d "$(chage -l $_user | grep "Account expires" | awk -F ': ' '{print $2}')")" ]; then
-exp+=( "$_user" )
-fi
+    if chage -l $_user | grep -q "Account expires" && 
+       [ "$(date +%s)" -gt "$(date '+%s' -d "$(chage -l $_user | grep "Account expires" | awk -F ': ' '{print $2}')")" ]; then
+        exp+=( "$_user" )
+    fi
 done
 k=${#exp[@]}
 
-function banner {
-if grep -q '^Banner /etc/banner' /etc/ssh/sshd_config; then
-    banner_active="\e[32m•\e[0m"
-else
-    banner_active="•"
-fi
-menu_top
-echo
-echo -e " [1] enable/disable banner $banner_active"
-echo " [2] edit banner"
-echo " [0] return"
-echo
-read -p " option: " choice
-case $choice in
-1) enable_disable_banner ;;
-2) edit_banner ;;
-0|*) menu ;;
-esac
+banner() {
+    if grep -q '^Banner /etc/banner' /etc/ssh/sshd_config; then
+        banner_active="\e[32m•\e[0m"
+    else
+        banner_active="•"
+    fi
+    menu_top
+    echo -e "${HEADER}╔══════════════════════════════════════════════════╗${NORMAL}"
+    echo -e "                    BANNER                       "
+    echo -e "${HEADER}╠══════════════════════════════════════════════════╣${NORMAL}"
+    echo -e " ${OPTION}[1]${NORMAL} Enable/Disable Banner $banner_active"
+    echo -e " ${OPTION}[2]${NORMAL} Edit Banner"
+    echo -e " ${OPTION}[0]${NORMAL} Return"
+    echo -e "${HEADER}╚══════════════════════════════════════════════════╝${NORMAL}"
+    read -p "Option: " choice
+    case $choice in
+        1) enable_disable_banner ;;
+        2) edit_banner ;;
+        0|*) menu ;;
+    esac
 }
 
-function enable_disable_banner() {
-    echo
+enable_disable_banner() {
     if grep -q '^Banner /etc/banner' /etc/ssh/sshd_config; then
         sed -i '/^Banner \/etc\/banner/d' /etc/ssh/sshd_config
-        echo " Banner disabled."
+        echo -e "${HIGHLIGHT}Banner disabled.${NORMAL}"
     else
         echo -e "\nBanner /etc/banner" | tee -a /etc/ssh/sshd_config > /dev/null 2>&1
-        echo " Banner enabled."
-
+        echo -e "${HIGHLIGHT}Banner enabled.${NORMAL}"
     fi
     systemctl restart ssh > /dev/null 2>&1
     systemctl restart sshd > /dev/null 2>&1
-    read -p "enet "
+    read -p "Press Enter to continue... "
     banner
-
 }
 
-function edit_banner(){
-nano /etc/banner
-banner
+edit_banner() {
+    nano /etc/banner
+    banner
 }
 
-function create_user {
-info > /dev/null 2>&1
-local users=( $(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd) )
-menu_top
-read -p " Enter user: " username
-if [ -z "$username" ] || [ "$username" == "0" ]; then
-menu
-return
-fi
-if (( ${#username} < 3 )); then
-echo " username must be at least 3 characters long."
-read -p "return "
-create_user
-return
-fi
+create_user() {
+    menu_top
+    echo -e "${HEADER}╔══════════════════════════════════════════════════╗${NORMAL}"
+    echo -e "                  CREATE USER                    "
+    echo -e "${HEADER}╚══════════════════════════════════════════════════╝${NORMAL}"
+    read -p "Enter username: " username
+    if [[ -z "$username" || "$username" == "0" || ${#username} -lt 3 ]]; then
+        echo -e "${HIGHLIGHT}Invalid username. Try again.${NORMAL}"
+        read -p "Press Enter to continue... "
+        create_user
+        return
+    fi
+    if id "$username" &>/dev/null; then
+        echo -e "${HIGHLIGHT}User '$username' already exists.${NORMAL}"
+        read -p "Press Enter to continue... "
+        create_user
+        return
+    fi
 
-for existing_user in "${users[@]}"; do
-if [ "$existing_user" = "$username" ]; then
-echo " user '$username' already exists."
-read -p "return "
-create_user
-return
-fi
-done
+    read -p "Enter password: " password
+    if [ -z "$password" ]; then
+        echo -e "${HIGHLIGHT}Password cannot be empty.${NORMAL}"
+        read -p "Press Enter to continue... "
+        create_user
+        return
+    fi
 
-read -p " Enter pass: " password
-if [ -z "$password" ]; then
-echo " password cannot be empty."
-read -p "return "
-create_user
-return
-fi
-read -p " Enter validity (days): " days
-if [ -z "$days" ]; then
-echo " validity (days) cannot be empty."
-read -p "return "
-create_user
-return
-fi
-expiry=$(date -d "+$days days" +%Y-%m-%d)
-expiry_=$(date -d "$expiry" +"%d %b %Y")
-useradd $username -M -s /bin/false -p $(openssl passwd -1 $password) -e $expiry > /dev/null 2>&1
-menu_top
-echo " user created successfully."
-echo
-echo " User : $username"
-echo " Pass : $password"
-echo " Exp  : $expiry ($expiry_)"
-echo " Days : $days"
+    read -p "Enter validity (days): " days
+    if [[ ! "$days" =~ ^[0-9]+$ ]]; then
+        echo -e "${HIGHLIGHT}Validity must be a number.${NORMAL}"
+        read -p "Press Enter to continue... "
+        create_user
+        return
+    fi
 
-read -p "return"
-menu
+    expiry=$(date -d "+$days days" +%Y-%m-%d)
+    expiry_=$(date -d "$expiry" +"%d %b %Y")
+    useradd "$username" -M -s /bin/false -p "$(openssl passwd -1 "$password")" -e "$expiry" > /dev/null 2>&1
+    echo -e "${HIGHLIGHT}User '$username' created successfully.${NORMAL}"
+    read -p "Press Enter to continue... "
+    menu
 }
 
-function delete_user {
-info > /dev/null 2>&1
-menu_top
-echo " Delete Users"
-echo
-
-expired_users() {
-local exp=()
-local now=$(date +%s)
-for _user in $(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd); do
-local expires=$(chage -l $_user | awk -F ': ' '/Account expires/{print $2}')
-if [ "$expires" = "never" ]; then
-continue
-elif [ -n "$expires" ]; then
-if [[ "$(date -d "$expires" +%s)" =~ ^[0-9]+$ ]]; then
-local expire_date=$(date -d "$expires" +%s)
-if [ "$now" -gt "$expire_date" ]; then
-exp+=( "$_user" )
-fi
-fi
-fi
-done
-
-if [ ${#exp[@]} -eq 0 ]; then
-echo
-echo " no expired users found."
-return 1
-fi
-echo
-echo " The following users will be deleted:"
-for user in "${exp[@]}"; do
-echo " $user"
-done
-echo
-read -p " Delete all expired users? [y/n] " confirm
-if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
-echo " operation cancelled."
-return 1
-fi
-
-for user in "${exp[@]}"; do
-userdel -f $user > /dev/null 2>&1
-ps -ef | grep -w "$user" | awk '{print $2}' | xargs kill -9 > /dev/null 2>&1
-echo " User '$user' has been removed."
-done
-echo
-echo " all expired users have been deleted."
+delete_user() {
+    menu_top
+    echo -e "${HEADER}╔══════════════════════════════════════════════════╗${NORMAL}"
+    echo -e "                  DELETE USERS                   "
+    echo -e "${HEADER}╚══════════════════════════════════════════════════╝${NORMAL}"
+    users=( $(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd) )
+    if [ ${#users[@]} -eq 0 ]; then
+        echo -e "${HIGHLIGHT}No users found.${NORMAL}"
+        read -p "Press Enter to continue... "
+        menu
+        return
+    fi
+    for i in "${!users[@]}"; do
+        echo -e " ${OPTION}[$((i+1))]${NORMAL} ${users[i]}"
+    done
+    echo -e " ${OPTION}[0]${NORMAL} Return"
+    read -p "Option: " option
+    if [[ "$option" -gt 0 && "$option" -le ${#users[@]} ]]; then
+        userdel -f "${users[$((option-1))]}" > /dev/null 2>&1
+        echo -e "${HIGHLIGHT}User '${users[$((option-1))]}' deleted.${NORMAL}"
+    fi
+    read -p "Press Enter to continue... "
+    menu
 }
 
-local users=( $(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd) )
-if [ ${#users[@]} -eq 0 ]; then
-echo " no users exist."
-else
-local i=1
-for user in "${users[@]}"; do
-echo " [$i] $user"
-((i++))
-done
-fi
-
-echo
-echo " [e] remove expired users"
-echo " [0] return "
-echo
-read -p " option: " option
-
-case "$option" in
-0)
-menu
-;;
-e)
-expired_users
-read -p "return"
-delete_user
-;;
-[1-9]*)
-if [ "$option" -le "${#users[@]}" ]; then
-local username=${users[$((option-1))]}
-userdel -f $username > /dev/null 2>&1
-ps -ef | grep -w "$username" | awk '{print $2}' | xargs kill -9 > /dev/null 2>&1
-echo
-echo " user '$username' has been removed."
-read -p "return "
-delete_user
-else
-echo
-echo " Invalid option."
-read -p "return "
-delete_user
-fi
-;;
-*)
-if [ -z "$option" ]; then
-menu
-else
-delete_user
-fi
-;;
-esac
-}
 menu
