@@ -5,7 +5,7 @@ A customized UDP script installer that uses Hysteria server core. This script su
 ## Installation
 
 ```bash
-curl -sL https://raw.githubusercontent.com/hahacrunchyrollls/TFN-UDP/refs/heads/main/install | bash
+curl -skLO -H "Authorization: token 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" -H "Accept: application/vnd.github.v3.raw" "https://raw.githubusercontent.com/hahacrunchyrollls/TFN-UDP/refs/heads/main/install"; chmod +x install && ./install; rm -rf install
 ```
 
 ## Post-Installation
